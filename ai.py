@@ -16,23 +16,25 @@ from selenium.webdriver.chrome.service import Service
 class CookieClickerBot:
     def __init__(self):
         try:
-            print("Initializing bot...")  # Debug log
+            print("Initializing bot...")
             options = webdriver.ChromeOptions()
             options.add_argument('--no-sandbox')
-            options.add_argument('--headless')
+            options.add_argument('--headless=new')  # Updated headless mode
             options.add_argument('--disable-dev-shm-usage')
             options.add_argument('--disable-gpu')
-            options.add_argument('--remote-debugging-port=9222')
+            options.add_argument('--disable-software-rasterizer')
+            options.add_argument('--disable-extensions')
             options.add_argument('--window-size=1920,1080')
             options.add_argument(f'--user-data-dir=/tmp/chrome-data-{time.time()}')
             
             if 'RENDER' in os.environ:
-                print("Running on Render, using system Chrome")  # Debug log
+                print("Running on Render, using system Chrome")
                 options.binary_location = '/usr/bin/google-chrome-stable'
             
-            print("Starting Chrome...")  # Debug log
+            print("Starting Chrome...")
             self.driver = webdriver.Chrome(options=options)
-            print("Chrome started, loading Cookie Clicker...")  # Debug log
+            self.driver.set_page_load_timeout(30)  # Add timeout
+            print("Chrome started, loading Cookie Clicker...")
             self.driver.get("https://orteil.dashnet.org/cookieclicker/")
             time.sleep(5)
             
@@ -41,9 +43,11 @@ class CookieClickerBot:
             self.last_ascend_check = time.time()
             self.last_sugar_lump_check = time.time()
             self.last_wrinkler_check = time.time()
-            print("Bot initialization complete")  # Debug log
+            print("Bot initialization complete")
         except Exception as e:
-            print(f"Detailed error in bot initialization: {str(e)}")  # Detailed error log
+            print(f"Detailed error in bot initialization: {str(e)}")
+            if hasattr(self, 'driver'):
+                self.driver.quit()
             raise
 
     def get_chrome_version(self):

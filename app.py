@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify
-from ai import CookieClickerBot
 import threading
+import time
 
 app = Flask(__name__)
 bot = None
@@ -16,17 +16,17 @@ def start_bot():
     global bot, bot_thread, bot_status
     if bot_status == "stopped":
         try:
-            print("Attempting to start bot...")  # Debug log
+            from ai import CookieClickerBot  # Import here to avoid startup issues
+            print("Attempting to start bot...")
             bot = CookieClickerBot()
-            print("Bot instance created...")  # Debug log
+            print("Bot instance created...")
             bot_thread = threading.Thread(target=bot.play)
             bot_thread.daemon = True
             bot_thread.start()
             bot_status = "running"
-            print("Bot started successfully")  # Debug log
             return jsonify({"status": "success", "message": "Bot started successfully"})
         except Exception as e:
-            print(f"Error starting bot: {str(e)}")  # Detailed error log
+            print(f"Error starting bot: {str(e)}")
             return jsonify({"status": "error", "message": str(e)})
     return jsonify({"status": "error", "message": "Bot is already running"})
 
