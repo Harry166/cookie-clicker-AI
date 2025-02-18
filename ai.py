@@ -22,6 +22,7 @@ class CookieClickerBot:
         options.add_argument('--disable-gpu')
         options.add_argument('--remote-debugging-port=9222')
         options.add_argument('--window-size=1920,1080')
+        options.add_argument(f'--user-data-dir=/tmp/chrome-data-{time.time()}')
         
         # Use Chrome binary from Render
         if 'RENDER' in os.environ:
