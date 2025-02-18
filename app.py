@@ -16,14 +16,17 @@ def start_bot():
     global bot, bot_thread, bot_status
     if bot_status == "stopped":
         try:
+            print("Attempting to start bot...")  # Debug log
             bot = CookieClickerBot()
+            print("Bot instance created...")  # Debug log
             bot_thread = threading.Thread(target=bot.play)
             bot_thread.daemon = True
             bot_thread.start()
             bot_status = "running"
+            print("Bot started successfully")  # Debug log
             return jsonify({"status": "success", "message": "Bot started successfully"})
         except Exception as e:
-            print(f"Error starting bot: {e}")
+            print(f"Error starting bot: {str(e)}")  # Detailed error log
             return jsonify({"status": "error", "message": str(e)})
     return jsonify({"status": "error", "message": "Bot is already running"})
 

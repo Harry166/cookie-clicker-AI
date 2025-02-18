@@ -15,21 +15,24 @@ from selenium.webdriver.chrome.service import Service
 
 class CookieClickerBot:
     def __init__(self):
-        options = webdriver.ChromeOptions()
-        options.add_argument('--no-sandbox')
-        options.add_argument('--headless')
-        options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--disable-gpu')
-        options.add_argument('--remote-debugging-port=9222')
-        options.add_argument('--window-size=1920,1080')
-        options.add_argument(f'--user-data-dir=/tmp/chrome-data-{time.time()}')
-        
-        # Use Chrome binary from Render
-        if 'RENDER' in os.environ:
-            options.binary_location = '/usr/bin/google-chrome-stable'
-        
         try:
+            print("Initializing bot...")  # Debug log
+            options = webdriver.ChromeOptions()
+            options.add_argument('--no-sandbox')
+            options.add_argument('--headless')
+            options.add_argument('--disable-dev-shm-usage')
+            options.add_argument('--disable-gpu')
+            options.add_argument('--remote-debugging-port=9222')
+            options.add_argument('--window-size=1920,1080')
+            options.add_argument(f'--user-data-dir=/tmp/chrome-data-{time.time()}')
+            
+            if 'RENDER' in os.environ:
+                print("Running on Render, using system Chrome")  # Debug log
+                options.binary_location = '/usr/bin/google-chrome-stable'
+            
+            print("Starting Chrome...")  # Debug log
             self.driver = webdriver.Chrome(options=options)
+            print("Chrome started, loading Cookie Clicker...")  # Debug log
             self.driver.get("https://orteil.dashnet.org/cookieclicker/")
             time.sleep(5)
             
@@ -38,8 +41,9 @@ class CookieClickerBot:
             self.last_ascend_check = time.time()
             self.last_sugar_lump_check = time.time()
             self.last_wrinkler_check = time.time()
+            print("Bot initialization complete")  # Debug log
         except Exception as e:
-            print(f"Error initializing bot: {e}")
+            print(f"Detailed error in bot initialization: {str(e)}")  # Detailed error log
             raise
 
     def get_chrome_version(self):
