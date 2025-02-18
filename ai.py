@@ -1,5 +1,5 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time
 import sys
@@ -11,28 +11,35 @@ import requests
 import zipfile
 import io
 import re
+from selenium.webdriver.chrome.service import Service
 
 class CookieClickerBot:
     def __init__(self):
-        # Setup ChromeDriver based on platform
-        self.setup_chromedriver()
-        
         options = webdriver.ChromeOptions()
         options.add_argument('--no-sandbox')
+        options.add_argument('--headless')
         options.add_argument('--disable-dev-shm-usage')
-        options.add_argument('--headless')  # Add headless mode
-        options.add_argument('--disable-gpu')  # Required for headless mode
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        options.add_argument('--disable-gpu')
+        options.add_argument('--remote-debugging-port=9222')
+        options.add_argument('--window-size=1920,1080')
         
-        self.driver = webdriver.Chrome(service=self.service, options=options)
-        self.driver.get("https://orteil.dashnet.org/cookieclicker/")
-        time.sleep(5)
+        # Use Chrome binary from Render
+        if 'RENDER' in os.environ:
+            options.binary_location = '/usr/bin/google-chrome-stable'
         
-        self.initialize_game()
-        self.last_save = time.time()
-        self.last_ascend_check = time.time()
-        self.last_sugar_lump_check = time.time()
-        self.last_wrinkler_check = time.time()
+        try:
+            self.driver = webdriver.Chrome(options=options)
+            self.driver.get("https://orteil.dashnet.org/cookieclicker/")
+            time.sleep(5)
+            
+            self.initialize_game()
+            self.last_save = time.time()
+            self.last_ascend_check = time.time()
+            self.last_sugar_lump_check = time.time()
+            self.last_wrinkler_check = time.time()
+        except Exception as e:
+            print(f"Error initializing bot: {e}")
+            raise
 
     def get_chrome_version(self):
         system = platform.system().lower()
