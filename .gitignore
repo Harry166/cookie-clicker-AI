@@ -1,0 +1,4 @@
+echo "google-chrome-stable_current_amd64.deb
+chromedriver-linux64/
+__pycache__/
+*.pyc" > .gitignore

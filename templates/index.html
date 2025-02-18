@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cookie Clicker Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Cookie Clicker Bot</h1>
+        <div class="status-container">
+            <p>Status: <span id="status">{{ status }}</span></p>
+        </div>
+        <div class="button-container">
+            <button id="startBtn" onclick="startBot()">Start Bot</button>
+            <button id="stopBtn" onclick="stopBot()">Stop Bot</button>
+        </div>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        function startBot() {
+            fetch('/start')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('message').innerText = data.message;
+                    if (data.status === 'success') {
+                        document.getElementById('status').innerText = 'running';
+                    }
+                });
+        }
+
+        function stopBot() {
+            fetch('/stop')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('message').innerText = data.message;
+                    if (data.status === 'success') {
+                        document.getElementById('status').innerText = 'stopped';
+                    }
+                });
+        }
+
+        // Update status every 5 seconds
+        setInterval(() => {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('status').innerText = data.status;
+                });
+        }, 5000);
+    </script>
+</body>
+</html>
