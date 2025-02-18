@@ -23,6 +23,7 @@ def start_bot():
             bot_status = "running"
             return jsonify({"status": "success", "message": "Bot started successfully"})
         except Exception as e:
+            print(f"Error starting bot: {e}")
             return jsonify({"status": "error", "message": str(e)})
     return jsonify({"status": "error", "message": "Bot is already running"})
 
