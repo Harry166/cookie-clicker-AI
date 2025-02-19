@@ -366,48 +366,40 @@ class CookieClickerBot:
             print(f"Purchase error: {e}")
 
     def play(self):
-        while True:
-            try:
-                # Click golden cookies and reindeer
-                self.driver.execute_script("""
-                    for (let shimmer of Game.shimmers) {
-                        shimmer.pop();
-                    }
-                """)
+        try:
+            print("Bot starting to play...")
+            while True:
+                try:
+                    # Click the cookie
+                    cookie = self.driver.find_element(By.ID, "bigCookie")
+                    cookie.click()
+                    
+                    # Every 30 seconds, check for upgrades
+                    current_time = time.time()
+                    if current_time - self.last_save >= 30:
+                        print("Checking for upgrades...")  # Status update
+                        self.strategic_purchase()
+                        self.handle_minigames()
+                        self.handle_sugar_lumps()
+                        self.handle_wrinklers()
+                        self.handle_krumblor()
+                        self.handle_santa()
+                        self.last_save = current_time
+                    
+                    # Every 5 minutes, check for ascension
+                    if current_time - self.last_ascend_check >= 300:
+                        print("Checking for ascension...")  # Status update
+                        self.check_ascension()
+                        self.last_ascend_check = current_time
+                    
+                except Exception as e:
+                    print(f"Error during play loop: {str(e)}")
+                    time.sleep(1)
                 
-                # Click big cookie
-                self.driver.execute_script("Game.ClickCookie();")
-                
-                # Handle all mechanics
-                self.strategic_purchase()
-                self.handle_minigames()
-                self.handle_sugar_lumps()
-                self.handle_wrinklers()
-                self.handle_krumblor()
-                self.handle_santa()
-                
-                # Periodic checks
-                current_time = time.time()
-                if current_time - self.last_save > 300:
-                    self.driver.execute_script("Game.WriteSave(1);")
-                    self.last_save = current_time
-                
-                if current_time - self.last_ascend_check > 600:
-                    self.check_ascension()
-                    self.last_ascend_check = current_time
-                
-                # Status update
-                if current_time % 30 < 1:
-                    cps = self.driver.execute_script("return Game.cookiesPs")
-                    cookies = self.driver.execute_script("return Game.cookies")
-                    prestige = self.driver.execute_script("return Game.prestige")
-                    print(f"CPS: {cps:.1f} | Cookies: {cookies:.0f} | Prestige: {prestige}")
-                
-                time.sleep(0.05)
-                
-            except Exception as e:
-                print(f"Error: {e}")
-                time.sleep(1)
+        except Exception as e:
+            print(f"Fatal error in play loop: {str(e)}")
+            if hasattr(self, 'driver'):
+                self.driver.quit()
 
 def main():
     try:

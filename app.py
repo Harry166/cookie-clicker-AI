@@ -44,7 +44,13 @@ def stop_bot():
 
 @app.route('/status')
 def get_status():
-    return jsonify({"status": bot_status})
+    global bot_status
+    message = "Bot is running and clicking cookies" if bot_status == "running" else "Bot is stopped"
+    return jsonify({
+        "status": bot_status,
+        "message": message,
+        "timestamp": time.strftime("%H:%M:%S")
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
